@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpaceSense Lite - Orbital Debris Intelligence</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/animations.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <div class="space-background">
+        <div class="stars"></div>
+        <div class="twinkling"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-satellite"></i>
+                <span>SpaceSense Lite</span>
+            </div>
+            <div class="nav-status">
+                <div class="nav-controls">
+                    <button class="refresh-btn" id="refreshData" title="Refresh Data">
+                        <i class="fas fa-sync-alt"></i>
+                        <span>Refresh</span>
+                    </button>
+                    <button class="auto-refresh-btn" id="toggleAutoRefresh" title="Toggle Auto-Refresh">
+                        <i class="fas fa-play"></i>
+                        <span>Auto</span>
+                    </button>
+                </div>
+                <div class="status-indicator" id="connectionStatus">
+                    <i class="fas fa-circle"></i>
+                    <span>Connected</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Dashboard -->
+    <div class="dashboard-container">
+        <!-- Header Stats -->
+        <div class="stats-grid">
+            <div class="stat-card animate-slide-up">
+                <div class="stat-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 id="totalObjects">Loading...</h3>
+                    <p>Total Objects</p>
+                </div>
+            </div>
+            
+            <div class="stat-card animate-slide-up" style="animation-delay: 0.1s">
+                <div class="stat-icon high-risk">
+                    <i class="fas fa-radiation"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 id="highRiskObjects">Loading...</h3>
+                    <p>High Risk</p>
+                </div>
+            </div>
+            
+            <div class="stat-card animate-slide-up" style="animation-delay: 0.2s">
+                <div class="stat-icon medium-risk">
+                    <i class="fas fa-eye"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 id="mediumRiskObjects">Loading...</h3>
+                    <p>Watch Zone</p>
+                </div>
+            </div>
+            
+            <div class="stat-card animate-slide-up" style="animation-delay: 0.3s">
+                <div class="stat-icon">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 id="activeAlerts">Loading...</h3>
+                    <p>Active Alerts</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="main-grid">
+            <!-- Earth Visualization -->
+            <div class="panel earth-panel animate-fade-in">
+                <div class="panel-header">
+                    <h2><i class="fas fa-globe"></i> Live Orbital View</h2>
+                    <div class="panel-controls">
+                        <button class="btn-control" id="toggleAnimation">
+                            <i class="fas fa-pause"></i>
+                        </button>
+                        <button class="btn-control" id="resetView">
+                            <i class="fas fa-refresh"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="earth-container">
+                    <div id="earthVisualization"></div>
+                    <div class="legend">
+                        <div class="legend-item">
+                            <span class="legend-color debris"></span>
+                            <span>Debris</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color satellite"></span>
+                            <span>Satellites</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color high-risk"></span>
+                            <span>High Risk</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Risk Analysis -->
+            <div class="panel risk-panel animate-fade-in" style="animation-delay: 0.2s">
+                <div class="panel-header">
+                    <h2><i class="fas fa-chart-line"></i> Risk Analysis</h2>
+                </div>
+                <div class="risk-content">
+                    <div class="risk-zones">
+                        <div class="risk-zone safe">
+                            <div class="zone-header">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Safe Zone</span>
+                            </div>
+                            <div class="zone-count" id="safeZoneCount">0</div>
+                        </div>
+                        <div class="risk-zone watch">
+                            <div class="zone-header">
+                                <i class="fas fa-eye"></i>
+                                <span>Watch Zone</span>
+                            </div>
+                            <div class="zone-count" id="watchZoneCount">0</div>
+                        </div>
+                        <div class="risk-zone alert">
+                            <div class="zone-header">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <span>Alert Zone</span>
+                            </div>
+                            <div class="zone-count" id="alertZoneCount">0</div>
+                        </div>
+                    </div>
+                    
+                    <div class="collision-probability">
+                        <h3>Collision Probability</h3>
+                        <div class="probability-bars">
+                            <div class="prob-item">
+                                <span>Next 24h</span>
+                                <div class="prob-bar">
+                                    <div class="prob-fill" id="prob24h"></div>
+                                </div>
+                                <span id="prob24hText">0%</span>
+                            </div>
+                            <div class="prob-item">
+                                <span>Next Week</span>
+                                <div class="prob-bar">
+                                    <div class="prob-fill" id="probWeek"></div>
+                                </div>
+                                <span id="probWeekText">0%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Critical Conjunctions -->
+            <div class="panel conjunctions-panel animate-fade-in" style="animation-delay: 0.4s">
+                <div class="panel-header">
+                    <h2><i class="fas fa-crosshairs"></i> Critical Conjunctions</h2>
+                </div>
+                <div class="conjunctions-list" id="conjunctionsList">
+                    <!-- Dynamic content -->
+                </div>
+            </div>
+
+            <!-- AI Insights -->
+            <div class="panel ai-panel animate-fade-in" style="animation-delay: 0.6s">
+                <div class="panel-header">
+                    <h2><i class="fas fa-brain"></i> AI Insights</h2>
+                </div>
+                <div class="ai-content">
+                    <div class="ai-analysis" id="aiAnalysis">
+                        Loading AI analysis...
+                    </div>
+                    <div class="ai-predictions" id="aiPredictions">
+                        <!-- Dynamic content -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Initializing SpaceSense Lite...</p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/static/js/earth-visualization.js"></script>
+    <script src="/static/js/websocket-client.js"></script>
+    <script src="/static/js/dashboard.js"></script>
+</body>
+</html>

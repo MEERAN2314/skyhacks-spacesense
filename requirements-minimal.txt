@@ -1,0 +1,29 @@
+# Minimal requirements for SpaceSense Lite (Python 3.12 compatible)
+
+# Core web framework
+fastapi
+uvicorn[standard]
+jinja2
+python-multipart
+websockets
+
+# Database
+motor
+pymongo
+
+# HTTP client
+httpx
+
+# Data processing (minimal versions)
+numpy
+pandas
+
+# Orbital mechanics (essential only)
+skyfield
+
+# Environment and AI
+python-dotenv
+google-generativeai
+
+# Static files
+aiofiles
