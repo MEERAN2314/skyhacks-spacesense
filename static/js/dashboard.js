@@ -57,7 +57,11 @@ class DashboardManager {
             
             // Update Earth visualization
             if (window.earthViz) {
-                window.earthViz.updateData(debrisData.debris, satelliteData.satellites);
+                console.log('Loading initial data for Earth viz:', {
+                    debris: debrisData.debris?.length || 0,
+                    satellites: satelliteData.satellites?.length || 0
+                });
+                window.earthViz.updateData(debrisData.debris || [], satelliteData.satellites || []);
             }
             
         } catch (error) {
@@ -407,7 +411,37 @@ class DashboardManager {
                         e.preventDefault();
                         // Toggle fullscreen for earth viz
                         break;
+                    case '=':
+                    case '+':
+                        e.preventDefault();
+                        if (window.earthViz) {
+                            window.earthViz.zoomIn();
+                        }
+                        break;
+                    case '-':
+                        e.preventDefault();
+                        if (window.earthViz) {
+                            window.earthViz.zoomOut();
+                        }
+                        break;
                 }
+            }
+            
+            // Zoom shortcuts without Ctrl
+            switch (e.key) {
+                case '+':
+                case '=':
+                    if (e.target.tagName !== 'INPUT' && window.earthViz) {
+                        e.preventDefault();
+                        window.earthViz.zoomIn();
+                    }
+                    break;
+                case '-':
+                    if (e.target.tagName !== 'INPUT' && window.earthViz) {
+                        e.preventDefault();
+                        window.earthViz.zoomOut();
+                    }
+                    break;
             }
         });
         
@@ -420,6 +454,21 @@ class DashboardManager {
                 }, 100);
             }
         });
+        
+        // Mouse wheel zoom for Earth visualization
+        const earthContainer = document.getElementById('earthVisualization');
+        if (earthContainer) {
+            earthContainer.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                if (window.earthViz) {
+                    if (e.deltaY < 0) {
+                        window.earthViz.zoomIn();
+                    } else {
+                        window.earthViz.zoomOut();
+                    }
+                }
+            }, { passive: false });
+        }
     }
     
     showLoading(show) {

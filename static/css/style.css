@@ -385,6 +385,21 @@ body {
 .legend-color.satellite { background: var(--success-color); }
 .legend-color.high-risk { background: var(--warning-color); }
 
+.zoom-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border-color);
+    font-size: 0.8rem;
+    color: var(--primary-color);
+}
+
+.zoom-indicator i {
+    font-size: 0.9rem;
+}
+
 /* Risk Panel */
 .risk-content {
     padding: 1.5rem;

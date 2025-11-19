@@ -7,6 +7,9 @@ class EarthVisualization {
         this.satelliteData = [];
         this.animationFrame = null;
         this.rotationAngle = 0;
+        this.zoomLevel = 1.5; // Default zoom level
+        this.minZoom = 0.5;   // Minimum zoom (far out)
+        this.maxZoom = 5.0;   // Maximum zoom (close up)
         
         this.initializeVisualization();
     }
@@ -21,7 +24,26 @@ class EarthVisualization {
             responsive: true
         });
         
+        // Add some sample data initially
+        this.addSampleData();
+        
         this.startAnimation();
+    }
+    
+    addSampleData() {
+        // Add sample debris and satellites for initial display
+        const sampleDebris = [
+            { latitude: 51.6, longitude: 0, altitude: 408, name: "ISS Orbit", risk_level: "low", size_estimate: 0.1 },
+            { latitude: -23.5, longitude: 45, altitude: 550, name: "Sample Debris 1", risk_level: "medium", size_estimate: 0.05 },
+            { latitude: 35.2, longitude: -120, altitude: 780, name: "Sample Debris 2", risk_level: "high", size_estimate: 0.15 }
+        ];
+        
+        const sampleSatellites = [
+            { latitude: 51.6, longitude: 0, altitude: 408, name: "ISS", mission_type: "crewed_station" },
+            { latitude: 0, longitude: 100, altitude: 550, name: "Sample Sat 1", mission_type: "communication" }
+        ];
+        
+        this.updateData(sampleDebris, sampleSatellites);
     }
     
     createEarthSphere() {
@@ -63,13 +85,18 @@ class EarthVisualization {
     }
     
     createLayout() {
+        const range = 3 / this.zoomLevel; // Adjust range based on zoom level
         return {
             scene: {
-                xaxis: { visible: false, range: [-2, 2] },
-                yaxis: { visible: false, range: [-2, 2] },
-                zaxis: { visible: false, range: [-2, 2] },
+                xaxis: { visible: false, range: [-range, range] },
+                yaxis: { visible: false, range: [-range, range] },
+                zaxis: { visible: false, range: [-range, range] },
                 camera: {
-                    eye: { x: 1.5, y: 1.5, z: 1.5 },
+                    eye: { 
+                        x: this.zoomLevel * 1.5, 
+                        y: this.zoomLevel * 1.5, 
+                        z: this.zoomLevel * 1.5 
+                    },
                     center: { x: 0, y: 0, z: 0 }
                 },
                 bgcolor: 'rgba(0,0,0,0)',
@@ -83,6 +110,10 @@ class EarthVisualization {
     }
     
     updateData(debrisData, satelliteData) {
+        console.log('Earth viz received data:', {
+            debris: debrisData?.length || 0,
+            satellites: satelliteData?.length || 0
+        });
         this.debrisData = debrisData || [];
         this.satelliteData = satelliteData || [];
         this.renderObjects();
@@ -91,15 +122,22 @@ class EarthVisualization {
     renderObjects() {
         const traces = [this.createEarthSphere()[0]];
         
+        console.log('Rendering objects:', {
+            debrisCount: this.debrisData.length,
+            satelliteCount: this.satelliteData.length
+        });
+        
         // Add debris objects
         if (this.debrisData.length > 0) {
             const debrisTrace = this.createDebrisTrace();
+            console.log('Created debris trace with', debrisTrace.x?.length || 0, 'points');
             traces.push(debrisTrace);
         }
         
         // Add satellites
         if (this.satelliteData.length > 0) {
             const satelliteTrace = this.createSatelliteTrace();
+            console.log('Created satellite trace with', satelliteTrace.x?.length || 0, 'points');
             traces.push(satelliteTrace);
         }
         
@@ -107,6 +145,7 @@ class EarthVisualization {
         const orbitalPaths = this.createOrbitalPaths();
         traces.push(...orbitalPaths);
         
+        console.log('Total traces:', traces.length);
         Plotly.react(this.containerId, traces, this.createLayout());
     }
     
@@ -122,7 +161,7 @@ class EarthVisualization {
             const coords = this.latLonToCartesian(
                 debris.latitude, 
                 debris.longitude, 
-                1 + (debris.altitude / 6371) // Earth radius normalization
+                1 + (debris.altitude / 6371 * 0.5) // Better radius normalization
             );
             
             x.push(coords.x);
@@ -169,7 +208,7 @@ class EarthVisualization {
             const coords = this.latLonToCartesian(
                 satellite.latitude,
                 satellite.longitude,
-                1 + (satellite.altitude / 6371)
+                1 + (satellite.altitude / 6371 * 0.5) // Better radius normalization
             );
             
             x.push(coords.x);
@@ -260,12 +299,12 @@ class EarthVisualization {
         
         this.rotationAngle += 0.5;
         
-        // Update camera rotation
+        // Update camera rotation with current zoom level
         const camera = {
             eye: {
-                x: 2 * Math.cos(this.rotationAngle * Math.PI / 180),
-                y: 2 * Math.sin(this.rotationAngle * Math.PI / 180),
-                z: 1.5
+                x: this.zoomLevel * Math.cos(this.rotationAngle * Math.PI / 180) * 1.5,
+                y: this.zoomLevel * Math.sin(this.rotationAngle * Math.PI / 180) * 1.5,
+                z: this.zoomLevel * 1.5
             },
             center: { x: 0, y: 0, z: 0 }
         };
@@ -292,13 +331,59 @@ class EarthVisualization {
         return this.isAnimating;
     }
     
-    resetView() {
-        this.rotationAngle = 0;
+    zoomIn() {
+        this.zoomLevel = Math.min(this.maxZoom, this.zoomLevel * 1.3);
+        this.updateZoom();
+    }
+    
+    zoomOut() {
+        this.zoomLevel = Math.max(this.minZoom, this.zoomLevel / 1.3);
+        this.updateZoom();
+    }
+    
+    updateZoom() {
+        const range = 3 / this.zoomLevel;
         const camera = {
-            eye: { x: 1.5, y: 1.5, z: 1.5 },
+            eye: { 
+                x: this.zoomLevel * Math.cos(this.rotationAngle * Math.PI / 180) * 1.5,
+                y: this.zoomLevel * Math.sin(this.rotationAngle * Math.PI / 180) * 1.5,
+                z: this.zoomLevel * 1.5
+            },
             center: { x: 0, y: 0, z: 0 }
         };
-        Plotly.relayout(this.containerId, { 'scene.camera': camera });
+        
+        Plotly.relayout(this.containerId, {
+            'scene.camera': camera,
+            'scene.xaxis.range': [-range, range],
+            'scene.yaxis.range': [-range, range],
+            'scene.zaxis.range': [-range, range]
+        });
+        
+        // Update zoom level indicator
+        this.updateZoomIndicator();
+    }
+    
+    updateZoomIndicator() {
+        const zoomLevelElement = document.getElementById('zoomLevel');
+        if (zoomLevelElement) {
+            zoomLevelElement.textContent = `${this.zoomLevel.toFixed(1)}x`;
+            
+            // Add visual feedback
+            const indicator = document.getElementById('zoomIndicator');
+            if (indicator) {
+                indicator.style.transform = 'scale(1.1)';
+                indicator.style.color = 'var(--primary-color)';
+                setTimeout(() => {
+                    indicator.style.transform = 'scale(1)';
+                }, 200);
+            }
+        }
+    }
+    
+    resetView() {
+        this.rotationAngle = 0;
+        this.zoomLevel = 1.5; // Reset to default zoom
+        this.updateZoom();
     }
 }
 
@@ -308,6 +393,20 @@ document.addEventListener('DOMContentLoaded', function() {
     earthViz = new EarthVisualization('earthVisualization');
     
     // Control buttons
+    document.getElementById('zoomIn')?.addEventListener('click', function() {
+        earthViz.zoomIn();
+        // Add visual feedback
+        this.style.transform = 'scale(0.95)';
+        setTimeout(() => { this.style.transform = 'scale(1)'; }, 100);
+    });
+    
+    document.getElementById('zoomOut')?.addEventListener('click', function() {
+        earthViz.zoomOut();
+        // Add visual feedback
+        this.style.transform = 'scale(0.95)';
+        setTimeout(() => { this.style.transform = 'scale(1)'; }, 100);
+    });
+    
     document.getElementById('toggleAnimation')?.addEventListener('click', function() {
         const isAnimating = earthViz.toggleAnimation();
         const icon = this.querySelector('i');
@@ -316,5 +415,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     document.getElementById('resetView')?.addEventListener('click', function() {
         earthViz.resetView();
+        // Add visual feedback
+        this.style.transform = 'scale(0.95)';
+        setTimeout(() => { this.style.transform = 'scale(1)'; }, 100);
     });
 });
