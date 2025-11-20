@@ -1,0 +1,39 @@
+# Development Docker Compose Configuration
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+version: '3.8'
+
+services:
+  spacesense-lite:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder  # Use builder stage for development
+    environment:
+      - DEBUG=True
+      - HOST=0.0.0.0
+      - PORT=8006
+    volumes:
+      - .:/app:ro  # Mount source code for development
+      - /app/__pycache__  # Exclude pycache
+    command: ["python", "run.py"]
+    ports:
+      - "8006:8006"
+    
+  # Development tools
+  mongodb:
+    image: mongo:7
+    container_name: spacesense-mongo-dev
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_dev_data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=spacesense_lite
+    restart: unless-stopped
+    profiles:
+      - dev-db  # Only start with --profile dev-db
+
+volumes:
+  mongodb_dev_data:
+    driver: local

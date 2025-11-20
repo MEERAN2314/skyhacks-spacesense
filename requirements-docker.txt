@@ -1,3 +1,6 @@
+# Docker-optimized requirements for SpaceSense Lite
+# These versions are tested to work reliably in Docker containers
+
 # Core Web Framework
 fastapi>=0.104.1
 uvicorn[standard]>=0.24.0
@@ -17,15 +20,14 @@ python-dotenv>=1.0.0
 # AI & Machine Learning
 google-generativeai>=0.3.2
 
-# Scientific Computing (with fallbacks)
-numpy>=1.24.0
-pandas>=2.1.0
-skyfield>=1.47
+# Scientific Computing (Docker-compatible versions)
+numpy>=1.24.0,<2.0.0
+pandas>=2.1.0,<3.0.0
+skyfield>=1.47,<2.0.0
 
-# Optional Scientific Packages (with compatibility fixes)
-scipy>=1.11.0
-astropy>=5.3.0
-# poliastro>=0.17.0  # Commented out due to Python 3.11 compatibility issues
+# Optional Scientific Packages (conservative versions)
+scipy>=1.11.0,<2.0.0
+astropy>=5.3.0,<7.0.0
 
 # Visualization & Plotting
 plotly>=5.17.0
