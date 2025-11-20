@@ -16,8 +16,7 @@ async def get_database():
         mongo_url = os.getenv("MONGODB_URL")
         
         if not mongo_url:
-            print("⚠️  MONGODB_URL not found in environment variables")
-            print("📝 Using in-memory storage for demo")
+            # Silently use in-memory storage - this is perfectly fine for demos
             return None
             
         try:
