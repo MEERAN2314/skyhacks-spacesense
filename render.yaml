@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: spacesense-lite
+    env: python
+    buildCommand: pip install -r requirements-cloud.txt
+    startCommand: python start.py
+    envVars:
+      - key: DEBUG
+        value: "False"
+      - key: HOST
+        value: "0.0.0.0"
+      - key: PYTHONPATH
+        value: "."
+    # PORT is automatically set by Render
+    healthCheckPath: /api/debris/live

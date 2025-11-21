@@ -43,15 +43,16 @@ def main():
     # Check environment
     check_environment()
     
-    # Set default environment variables
-    os.environ.setdefault("HOST", "0.0.0.0")
-    os.environ.setdefault("PORT", "8006")
-    os.environ.setdefault("DEBUG", "True")
-    
-    # Get configuration
+    # Get configuration with cloud platform support
     host = os.getenv("HOST", "0.0.0.0")
-    port = int(os.getenv("PORT", 8006))
+    port = int(os.getenv("PORT", 8006))  # Cloud platforms set PORT automatically
     debug = os.getenv("DEBUG", "True").lower() == "true"
+    
+    # Set defaults only if not already set by cloud platform
+    if "HOST" not in os.environ:
+        os.environ["HOST"] = "0.0.0.0"
+    if "DEBUG" not in os.environ:
+        os.environ["DEBUG"] = "True"
     
     print(f"🌐 Server: http://{host}:{port}")
     print(f"🔧 Debug mode: {debug}")
