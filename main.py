@@ -134,10 +134,5 @@ async def websocket_endpoint(websocket: WebSocket):
     except WebSocketDisconnect:
         manager.disconnect(websocket)
 
-if __name__ == "__main__":
-    import os
-    host = os.getenv("HOST", "0.0.0.0")
-    port = int(os.getenv("PORT", 8006))
-    debug = os.getenv("DEBUG", "True").lower() == "true"
-    
-    uvicorn.run("main:app", host=host, port=port, reload=debug)
+# Removed __main__ block to prevent Render auto-detection
+# Use app.py for deployment instead
