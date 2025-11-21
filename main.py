@@ -39,8 +39,11 @@ async def shutdown_event():
     print("👋 SpaceSense Lite shutdown complete")
 
 @app.get("/", response_class=HTMLResponse)
+@app.head("/")
 async def dashboard(request: Request):
     """Main dashboard"""
+    if request.method == "HEAD":
+        return HTMLResponse(status_code=200)
     return templates.TemplateResponse("dashboard.html", {"request": request})
 
 @app.get("/api/debris/live")
@@ -66,6 +69,12 @@ async def get_ai_insights():
     """Get AI-powered insights"""
     insights = await ai_insights.generate_insights()
     return insights
+
+@app.get("/health")
+@app.head("/health")
+async def health_check():
+    """Health check endpoint for cloud platforms"""
+    return {"status": "healthy", "service": "SpaceSense Lite"}
 
 @app.post("/api/data/refresh")
 async def refresh_data():

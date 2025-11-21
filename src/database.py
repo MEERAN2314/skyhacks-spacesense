@@ -1,7 +1,6 @@
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 from typing import Optional
-import ssl
 
 class Database:
     client: Optional[AsyncIOMotorClient] = None
@@ -23,11 +22,11 @@ async def get_database():
             # MongoDB Atlas connection with SSL
             db.client = AsyncIOMotorClient(
                 mongo_url,
-                ssl=True,
-                ssl_cert_reqs=ssl.CERT_NONE,
                 serverSelectionTimeoutMS=5000,
                 connectTimeoutMS=10000,
-                maxPoolSize=50
+                maxPoolSize=50,
+                tls=True,
+                tlsAllowInvalidCertificates=True
             )
             
             # Extract database name from connection string or use default
