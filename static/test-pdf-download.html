@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Download Test - SpaceSense Pro</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #1a1a2e;
+            color: #fff;
+        }
+        h1 { color: #00d4ff; }
+        button {
+            background: #00d4ff;
+            color: #000;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin: 10px 5px;
+        }
+        button:hover { background: #00a8cc; }
+        #log {
+            background: #000;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            font-family: monospace;
+            font-size: 14px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .success { color: #4caf50; }
+        .error { color: #f44336; }
+        .info { color: #00d4ff; }
+    </style>
+</head>
+<body>
+    <h1>🧪 PDF Download Test</h1>
+    <p>Test PDF generation and download functionality</p>
+    
+    <div>
+        <button onclick="test1()">Test 1: Check jsPDF</button>
+        <button onclick="test2()">Test 2: Simple PDF</button>
+        <button onclick="test3()">Test 3: Full Report</button>
+        <button onclick="clearLog()">Clear Log</button>
+    </div>
+    
+    <div id="log"></div>
+
+    <script>
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const line = document.createElement('div');
+            line.className = type;
+            line.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logDiv.appendChild(line);
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+
+        function clearLog() {
+            document.getElementById('log').innerHTML = '';
+        }
+
+        function test1() {
+            log('🧪 Test 1: Checking jsPDF availability...', 'info');
+            
+            if (window.jspdf) {
+                log('✅ window.jspdf exists', 'success');
+            } else {
+                log('❌ window.jspdf NOT found', 'error');
+                return;
+            }
+            
+            if (window.jspdf.jsPDF) {
+                log('✅ window.jspdf.jsPDF exists', 'success');
+            } else {
+                log('❌ window.jspdf.jsPDF NOT found', 'error');
+                return;
+            }
+            
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                log('✅ Successfully created jsPDF instance', 'success');
+                log('✅ Test 1 PASSED', 'success');
+            } catch (error) {
+                log('❌ Error creating jsPDF instance: ' + error.message, 'error');
+            }
+        }
+
+        function test2() {
+            log('🧪 Test 2: Generating simple PDF...', 'info');
+            
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                doc.setFontSize(20);
+                doc.text('SpaceSense Pro', 20, 20);
+                
+                doc.setFontSize(12);
+                doc.text('Simple PDF Test', 20, 35);
+                doc.text('Generated: ' + new Date().toLocaleString(), 20, 45);
+                
+                const filename = 'test-simple.pdf';
+                doc.save(filename);
+                
+                log('✅ PDF saved as: ' + filename, 'success');
+                log('✅ Test 2 PASSED - Check your downloads!', 'success');
+            } catch (error) {
+                log('❌ Error: ' + error.message, 'error');
+                log('❌ Test 2 FAILED', 'error');
+            }
+        }
+
+        async function test3() {
+            log('🧪 Test 3: Generating full report PDF...', 'info');
+            
+            try {
+                // Fetch real data
+                log('📡 Fetching data from API...', 'info');
+                let data;
+                
+                try {
+                    const response = await fetch('/api/export/data?format=pdf');
+                    data = await response.json();
+                    log('✅ Data fetched: ' + (data.debris?.length || 0) + ' objects', 'success');
+                } catch (fetchError) {
+                    log('⚠️ API fetch failed, using sample data', 'info');
+                    data = {
+                        debris: [
+                            {name: 'COSMOS 2251 DEB', object_type: 'debris', altitude: 790, risk_level: 'high'},
+                            {name: 'ISS (ZARYA)', object_type: 'satellite', altitude: 408, risk_level: 'low'}
+                        ],
+                        risks: {
+                            collision_probability: {next_24h: 0.02, next_week: 0.05, next_month: 0.1}
+                        }
+                    };
+                }
+                
+                log('📝 Creating PDF document...', 'info');
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                const pageWidth = doc.internal.pageSize.getWidth();
+                let yPos = 20;
+                
+                // Header
+                doc.setFillColor(0, 212, 255);
+                doc.rect(0, 0, pageWidth, 35, 'F');
+                
+                doc.setFontSize(24);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(255, 255, 255);
+                doc.text('SpaceSense Pro', 15, 20);
+                
+                doc.setFontSize(12);
+                doc.setFont('helvetica', 'normal');
+                doc.text('Orbital Debris Intelligence Report', 15, 28);
+                
+                // Content
+                doc.setTextColor(0, 0, 0);
+                yPos = 50;
+                
+                doc.setFontSize(9);
+                doc.text('Generated: ' + new Date().toLocaleString(), 15, yPos);
+                yPos += 15;
+                
+                doc.setFontSize(16);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(0, 212, 255);
+                doc.text('Executive Summary', 15, yPos);
+                yPos += 10;
+                
+                doc.setFontSize(11);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(0, 0, 0);
+                
+                const totalObjects = data.debris?.length || 0;
+                const highRisk = data.debris?.filter(d => d.risk_level === 'high').length || 0;
+                
+                doc.text('Total Objects: ' + totalObjects, 20, yPos);
+                yPos += 7;
+                doc.text('High Risk: ' + highRisk, 20, yPos);
+                
+                log('✅ Content added to PDF', 'success');
+                
+                const filename = 'spacesense-report-' + new Date().toISOString().split('T')[0] + '.pdf';
+                doc.save(filename);
+                
+                log('✅ PDF saved as: ' + filename, 'success');
+                log('✅ Test 3 PASSED - Check your downloads!', 'success');
+                
+            } catch (error) {
+                log('❌ Error: ' + error.message, 'error');
+                log('❌ Stack: ' + error.stack, 'error');
+                log('❌ Test 3 FAILED', 'error');
+            }
+        }
+
+        // Auto-run test 1 on load
+        window.addEventListener('load', () => {
+            log('🚀 Page loaded', 'info');
+            setTimeout(() => test1(), 500);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PDF Test</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <h1>PDF Generation Test</h1>
+    <button onclick="testPDF()">Generate Test PDF</button>
+    <div id="status"></div>
+
+    <script>
+        function log(msg) {
+            console.log(msg);
+            document.getElementById('status').innerHTML += msg + '<br>';
+        }
+
+        async function testPDF() {
+            try {
+                log('🧪 Starting PDF test...');
+                
+                // Check if jsPDF is loaded
+                if (!window.jspdf) {
+                    log('❌ jsPDF not loaded!');
+                    return;
+                }
+                
+                log('✅ jsPDF library found');
+                
+                const { jsPDF } = window.jspdf;
+                log('✅ jsPDF constructor available');
+                
+                const doc = new jsPDF();
+                log('✅ PDF document created');
+                
+                // Add content
+                doc.setFontSize(20);
+                doc.text('SpaceSense Pro Test Report', 20, 20);
+                
+                doc.setFontSize(12);
+                doc.text('Generated: ' + new Date().toLocaleString(), 20, 30);
+                
+                doc.setFontSize(10);
+                doc.text('This is a test PDF to verify generation works.', 20, 45);
+                
+                log('✅ Content added to PDF');
+                
+                // Save
+                doc.save('test-report.pdf');
+                log('✅ PDF saved successfully!');
+                log('📥 Check your downloads folder for test-report.pdf');
+                
+            } catch (error) {
+                log('❌ Error: ' + error.message);
+                console.error(error);
+            }
+        }
+        
+        // Auto-test on load
+        window.addEventListener('load', () => {
+            log('Page loaded. Click button to test PDF generation.');
+        });
+    </script>
+</body>
+</html>

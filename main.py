@@ -1,13 +1,15 @@
 from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse, FileResponse
 import json
 import asyncio
 import random
 from datetime import datetime, timedelta
 from typing import List
 import uvicorn
+import io
+import csv
 
 from src.debris_tracker import DebrisTracker
 from src.risk_analyzer import RiskAnalyzer
@@ -249,26 +251,121 @@ async def track_satellite(norad_id: int):
         return {"error": str(e)}
 
 @app.get("/api/export/data")
-async def export_data(format: str = "json"):
-    """Export current data in various formats"""
+async def export_data_endpoint(format: str = "json"):
+    """Export current data in various formats with proper download headers"""
     try:
+        print(f"📤 Export endpoint called with format: {format}")
+        
         debris_data = await debris_tracker.get_live_debris()
         risk_data = await risk_analyzer.analyze_current_risks()
+        ai_data = await ai_insights.generate_insights()
         
-        export_data = {
+        response_data = {
             "debris": debris_data[:100],
             "risks": risk_data,
+            "ai_insights": ai_data,
             "exported_at": datetime.utcnow().isoformat(),
-            "format_version": "1.0"
+            "format_version": "1.0",
+            "total_objects": len(debris_data)
         }
         
-        if format == "csv":
-            # In a real implementation, convert to CSV
-            return {"message": "CSV export not yet implemented"}
+        print(f"✅ Export data prepared: {len(debris_data)} debris objects")
         
-        return export_data
+        # Return JSON with proper CORS headers to allow frontend download
+        return JSONResponse(
+            content=response_data,
+            headers={
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "GET, OPTIONS",
+                "Access-Control-Allow-Headers": "*",
+                "Cache-Control": "no-cache"
+            }
+        )
+        
     except Exception as e:
-        return {"error": str(e)}
+        print(f"❌ Export error: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return JSONResponse(
+            content={"error": str(e), "details": "Check server logs for more information"},
+            status_code=500
+        )
+
+@app.get("/api/export/download/{format}")
+async def download_export(format: str):
+    """Direct download endpoint for exports with proper file response"""
+    try:
+        print(f"📥 Download endpoint called with format: {format}")
+        
+        debris_data = await debris_tracker.get_live_debris()
+        risk_data = await risk_analyzer.analyze_current_risks()
+        ai_data = await ai_insights.generate_insights()
+        
+        timestamp = datetime.utcnow().strftime("%Y-%m-%d")
+        
+        if format == "json":
+            response_data = {
+                "debris": debris_data[:100],
+                "risks": risk_data,
+                "ai_insights": ai_data,
+                "exported_at": datetime.utcnow().isoformat(),
+                "format_version": "1.0",
+                "total_objects": len(debris_data)
+            }
+            
+            content = json.dumps(response_data, indent=2)
+            filename = f"spacesense-pro-data-{timestamp}.json"
+            media_type = "application/json"
+            
+        elif format == "csv":
+            # Create CSV content
+            output = io.StringIO()
+            writer = csv.writer(output)
+            
+            # Write header
+            writer.writerow(['Name', 'Type', 'Latitude', 'Longitude', 'Altitude', 'Risk Level'])
+            
+            # Write data
+            for item in debris_data[:100]:
+                writer.writerow([
+                    item.get('name', 'Unknown'),
+                    item.get('object_type', 'N/A'),
+                    item.get('latitude', 0),
+                    item.get('longitude', 0),
+                    item.get('altitude', 0),
+                    item.get('risk_level', 'unknown')
+                ])
+            
+            content = output.getvalue()
+            filename = f"spacesense-pro-data-{timestamp}.csv"
+            media_type = "text/csv"
+            
+        else:
+            return JSONResponse(
+                content={"error": f"Unsupported format: {format}"},
+                status_code=400
+            )
+        
+        print(f"✅ Download prepared: {filename} ({len(content)} bytes)")
+        
+        return StreamingResponse(
+            io.BytesIO(content.encode('utf-8')),
+            media_type=media_type,
+            headers={
+                "Content-Disposition": f'attachment; filename="{filename}"',
+                "Access-Control-Allow-Origin": "*",
+                "Cache-Control": "no-cache"
+            }
+        )
+        
+    except Exception as e:
+        print(f"❌ Download error: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return JSONResponse(
+            content={"error": str(e)},
+            status_code=500
+        )
 
 @app.get("/api/ml/predict-collision")
 async def predict_collision(
