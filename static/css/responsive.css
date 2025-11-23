@@ -1,0 +1,852 @@
+/* SpaceSense Pro - Responsive Design for All Devices */
+
+/* ============================================
+   MOBILE FIRST APPROACH - Base Styles
+   ============================================ */
+
+/* Enhanced Topbar/Navbar */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: rgba(10, 10, 15, 0.98);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 2px solid var(--border-color);
+    padding: 0.75rem 0;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s ease;
+}
+
+.navbar.scrolled {
+    padding: 0.5rem 0;
+    background: rgba(10, 10, 15, 1);
+    box-shadow: 0 6px 30px rgba(0, 212, 255, 0.2);
+}
+
+.nav-container {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.nav-brand:hover {
+    transform: scale(1.05);
+    text-shadow: 0 0 20px var(--primary-color);
+}
+
+.nav-brand i {
+    font-size: 1.75rem;
+    animation: rotate 10s linear infinite;
+    filter: drop-shadow(0 0 10px var(--primary-color));
+}
+
+.nav-brand span {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Mobile Menu Toggle */
+.nav-toggle {
+    display: none;
+    background: rgba(0, 212, 255, 0.2);
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.25rem;
+    transition: all 0.3s ease;
+}
+
+.nav-toggle:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: scale(1.1);
+}
+
+.nav-toggle:active {
+    transform: scale(0.95);
+}
+
+/* Navigation Status Section */
+.nav-status {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.nav-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+/* Enhanced Buttons */
+.refresh-btn,
+.auto-refresh-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    background: rgba(0, 212, 255, 0.15);
+    border: 1.5px solid var(--primary-color);
+    border-radius: 25px;
+    color: var(--primary-color);
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+    position: relative;
+    overflow: hidden;
+}
+
+.refresh-btn::before,
+.auto-refresh-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(0, 212, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.refresh-btn:hover::before,
+.auto-refresh-btn:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.refresh-btn:hover,
+.auto-refresh-btn:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 212, 255, 0.4);
+}
+
+.refresh-btn:active,
+.auto-refresh-btn:active {
+    transform: translateY(0);
+}
+
+.auto-refresh-btn {
+    background: rgba(255, 152, 0, 0.15);
+    border-color: var(--warning-color);
+    color: var(--warning-color);
+}
+
+.auto-refresh-btn:hover {
+    background: var(--warning-color);
+}
+
+.auto-refresh-btn.active {
+    background: var(--success-color);
+    border-color: var(--success-color);
+    color: white;
+    animation: pulse 2s infinite;
+}
+
+/* Status Indicator */
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    background: rgba(76, 175, 80, 0.15);
+    border: 1.5px solid var(--success-color);
+    border-radius: 25px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.status-indicator i {
+    color: var(--success-color);
+    animation: pulse 2s infinite;
+    filter: drop-shadow(0 0 5px var(--success-color));
+}
+
+.status-indicator.disconnected {
+    background: rgba(244, 67, 54, 0.15);
+    border-color: var(--danger-color);
+}
+
+.status-indicator.disconnected i {
+    color: var(--danger-color);
+    animation: none;
+}
+
+/* ============================================
+   TABLET STYLES (768px - 1024px)
+   ============================================ */
+
+@media (max-width: 1024px) {
+    .nav-container {
+        padding: 0 1.5rem;
+    }
+    
+    .nav-brand {
+        font-size: 1.15rem;
+    }
+    
+    .nav-brand i {
+        font-size: 1.5rem;
+    }
+    
+    .refresh-btn span,
+    .auto-refresh-btn span,
+    .status-indicator span {
+        display: none;
+    }
+    
+    .refresh-btn,
+    .auto-refresh-btn,
+    .status-indicator {
+        padding: 0.6rem;
+        min-width: 40px;
+        justify-content: center;
+    }
+    
+    .dashboard-container {
+        margin-top: 70px;
+        padding: 1.5rem;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    
+    .main-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .earth-container {
+        height: 450px;
+    }
+    
+    .risk-zones {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.75rem;
+    }
+}
+
+/* ============================================
+   MOBILE STYLES (max-width: 768px)
+   ============================================ */
+
+@media (max-width: 768px) {
+    /* Enhanced Mobile Navbar */
+    .navbar {
+        padding: 0.5rem 0;
+    }
+    
+    .nav-container {
+        padding: 0 1rem;
+        flex-wrap: nowrap;
+    }
+    
+    .nav-brand {
+        font-size: 1rem;
+        gap: 0.5rem;
+    }
+    
+    .nav-brand i {
+        font-size: 1.25rem;
+    }
+    
+    .nav-toggle {
+        display: block;
+    }
+    
+    .nav-status {
+        position: fixed;
+        top: 60px;
+        left: 0;
+        right: 0;
+        background: rgba(10, 10, 15, 0.98);
+        backdrop-filter: blur(20px);
+        padding: 1rem;
+        border-bottom: 2px solid var(--border-color);
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+        transform: translateY(-100%);
+        opacity: 0;
+        transition: all 0.3s ease;
+        pointer-events: none;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    }
+    
+    .nav-status.active {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: all;
+    }
+    
+    .nav-controls {
+        flex-direction: column;
+        width: 100%;
+        gap: 0.75rem;
+    }
+    
+    .refresh-btn,
+    .auto-refresh-btn,
+    .status-indicator {
+        width: 100%;
+        justify-content: center;
+        padding: 0.75rem 1rem;
+    }
+    
+    .refresh-btn span,
+    .auto-refresh-btn span,
+    .status-indicator span {
+        display: inline;
+    }
+    
+    /* Dashboard Adjustments */
+    .dashboard-container {
+        margin-top: 60px;
+        padding: 1rem;
+    }
+    
+    /* Stats Grid - Single Column */
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .stat-card {
+        padding: 1.25rem;
+    }
+    
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1.25rem;
+    }
+    
+    .stat-content h3 {
+        font-size: 1.75rem;
+    }
+    
+    .stat-content p {
+        font-size: 0.85rem;
+    }
+    
+    /* Main Grid - Single Column */
+    .main-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    /* Earth Visualization */
+    .earth-container {
+        height: 350px;
+        padding: 0.5rem;
+    }
+    
+    .legend {
+        top: 0.5rem;
+        right: 0.5rem;
+        padding: 0.75rem;
+        font-size: 0.8rem;
+    }
+    
+    .legend-item {
+        margin-bottom: 0.4rem;
+    }
+    
+    /* Panel Headers */
+    .panel-header {
+        padding: 1rem;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .panel-header h2 {
+        font-size: 1rem;
+    }
+    
+    .panel-controls {
+        width: 100%;
+        justify-content: flex-end;
+    }
+    
+    .btn-control {
+        padding: 0.4rem;
+        font-size: 0.9rem;
+    }
+    
+    /* Risk Zones - Vertical Stack */
+    .risk-zones {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+    
+    .risk-zone {
+        padding: 0.75rem;
+    }
+    
+    .zone-count {
+        font-size: 1.75rem;
+    }
+    
+    /* Conjunctions List */
+    .conjunctions-list {
+        max-height: 300px;
+        padding: 0.75rem;
+    }
+    
+    .conjunction-item {
+        padding: 0.75rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .conjunction-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    /* AI Content */
+    .ai-content {
+        padding: 1rem;
+    }
+    
+    .ai-analysis {
+        padding: 0.75rem;
+        font-size: 0.85rem;
+    }
+    
+    /* Satellite Tracker */
+    .satellite-list {
+        max-height: 250px;
+    }
+    
+    .satellite-item {
+        padding: 0.75rem;
+        gap: 0.5rem;
+    }
+    
+    .satellite-icon {
+        width: 35px;
+        height: 35px;
+        font-size: 1rem;
+    }
+    
+    .satellite-name {
+        font-size: 0.85rem;
+    }
+    
+    .satellite-details {
+        font-size: 0.7rem;
+    }
+    
+    /* Filter Buttons */
+    .filter-btn {
+        padding: 0.4rem 0.75rem;
+        font-size: 0.8rem;
+    }
+    
+    /* Search Input */
+    .search-input {
+        padding: 0.65rem 1rem 0.65rem 2.25rem;
+        font-size: 0.85rem;
+    }
+    
+    /* Performance Metrics */
+    .performance-metrics {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+        padding: 0.75rem;
+    }
+    
+    .metric-value {
+        font-size: 1.25rem;
+    }
+    
+    .metric-label {
+        font-size: 0.75rem;
+    }
+    
+    /* Timeline */
+    .timeline-container {
+        max-height: 300px;
+        padding: 0.75rem;
+    }
+    
+    .timeline-item {
+        padding-left: 1.5rem;
+        padding-bottom: 1rem;
+    }
+    
+    .timeline-content {
+        padding: 0.6rem;
+    }
+    
+    /* Heatmap */
+    .heatmap-container {
+        height: 250px;
+        padding: 0.5rem;
+    }
+}
+
+/* ============================================
+   SMALL MOBILE (max-width: 480px)
+   ============================================ */
+
+@media (max-width: 480px) {
+    .nav-brand span {
+        font-size: 0.9rem;
+    }
+    
+    .dashboard-container {
+        padding: 0.75rem;
+    }
+    
+    .stats-grid {
+        gap: 0.75rem;
+    }
+    
+    .stat-card {
+        padding: 1rem;
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .stat-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 1.1rem;
+    }
+    
+    .stat-content h3 {
+        font-size: 1.5rem;
+    }
+    
+    .stat-trend {
+        justify-content: center;
+        font-size: 0.75rem;
+    }
+    
+    .earth-container {
+        height: 280px;
+    }
+    
+    .legend {
+        font-size: 0.7rem;
+        padding: 0.5rem;
+    }
+    
+    .panel-header h2 {
+        font-size: 0.9rem;
+    }
+    
+    .btn-control {
+        padding: 0.35rem;
+        font-size: 0.8rem;
+    }
+    
+    .risk-zone {
+        padding: 0.6rem;
+    }
+    
+    .zone-header {
+        font-size: 0.8rem;
+    }
+    
+    .zone-count {
+        font-size: 1.5rem;
+    }
+    
+    .performance-metrics {
+        grid-template-columns: 1fr;
+    }
+    
+    .filter-group {
+        justify-content: center;
+    }
+    
+    .filter-btn {
+        flex: 1;
+        min-width: 60px;
+    }
+}
+
+/* ============================================
+   LARGE DESKTOP (min-width: 1440px)
+   ============================================ */
+
+@media (min-width: 1440px) {
+    .nav-container {
+        max-width: 1800px;
+        padding: 0 3rem;
+    }
+    
+    .dashboard-container {
+        max-width: 1800px;
+        padding: 2.5rem 3rem;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 2rem;
+    }
+    
+    .earth-container {
+        height: 700px;
+    }
+    
+    .main-grid {
+        gap: 2rem;
+    }
+}
+
+/* ============================================
+   ULTRA-WIDE (min-width: 1920px)
+   ============================================ */
+
+@media (min-width: 1920px) {
+    .nav-container {
+        max-width: 2200px;
+    }
+    
+    .dashboard-container {
+        max-width: 2200px;
+    }
+    
+    .earth-container {
+        height: 800px;
+    }
+}
+
+/* ============================================
+   LANDSCAPE MOBILE
+   ============================================ */
+
+@media (max-height: 500px) and (orientation: landscape) {
+    .navbar {
+        padding: 0.4rem 0;
+    }
+    
+    .dashboard-container {
+        margin-top: 55px;
+    }
+    
+    .earth-container {
+        height: 300px;
+    }
+    
+    .conjunctions-list,
+    .timeline-container,
+    .satellite-list {
+        max-height: 200px;
+    }
+}
+
+/* ============================================
+   TOUCH DEVICE OPTIMIZATIONS
+   ============================================ */
+
+@media (hover: none) and (pointer: coarse) {
+    /* Larger touch targets */
+    .btn-control,
+    .refresh-btn,
+    .auto-refresh-btn,
+    .filter-btn {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    /* Remove hover effects on touch devices */
+    .stat-card:hover,
+    .panel:hover,
+    .conjunction-item:hover,
+    .satellite-item:hover {
+        transform: none;
+    }
+    
+    /* Add active states instead */
+    .stat-card:active,
+    .panel:active,
+    .conjunction-item:active,
+    .satellite-item:active {
+        transform: scale(0.98);
+        opacity: 0.9;
+    }
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+
+@media print {
+    .navbar,
+    .nav-toggle,
+    .panel-controls,
+    .quick-actions,
+    .fullscreen-btn,
+    .loading-overlay {
+        display: none !important;
+    }
+    
+    .dashboard-container {
+        margin-top: 0;
+        padding: 1rem;
+    }
+    
+    .panel {
+        page-break-inside: avoid;
+        border: 1px solid #000;
+    }
+    
+    body {
+        background: white;
+        color: black;
+    }
+}
+
+/* ============================================
+   ACCESSIBILITY IMPROVEMENTS
+   ============================================ */
+
+/* Focus visible for keyboard navigation */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+/* Reduced motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .navbar {
+        border-bottom: 3px solid var(--primary-color);
+    }
+    
+    .stat-card,
+    .panel {
+        border-width: 2px;
+    }
+    
+    .refresh-btn,
+    .auto-refresh-btn,
+    .status-indicator {
+        border-width: 2px;
+    }
+}
+
+/* Dark mode support (already dark, but for completeness) */
+@media (prefers-color-scheme: dark) {
+    /* Already optimized for dark mode */
+}
+
+/* ============================================
+   UTILITY CLASSES FOR RESPONSIVE DESIGN
+   ============================================ */
+
+.hide-mobile {
+    display: block;
+}
+
+.show-mobile {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .hide-mobile {
+        display: none !important;
+    }
+    
+    .show-mobile {
+        display: block !important;
+    }
+}
+
+.hide-tablet {
+    display: block;
+}
+
+.show-tablet {
+    display: none;
+}
+
+@media (max-width: 1024px) {
+    .hide-tablet {
+        display: none !important;
+    }
+    
+    .show-tablet {
+        display: block !important;
+    }
+}
+
+/* Responsive text sizes */
+.text-responsive {
+    font-size: clamp(0.875rem, 2vw, 1rem);
+}
+
+.heading-responsive {
+    font-size: clamp(1.25rem, 3vw, 2rem);
+}
+
+/* Responsive spacing */
+.spacing-responsive {
+    padding: clamp(0.5rem, 2vw, 2rem);
+}
+
+/* Container queries support (future-proof) */
+@supports (container-type: inline-size) {
+    .panel {
+        container-type: inline-size;
+    }
+    
+    @container (max-width: 400px) {
+        .panel-header h2 {
+            font-size: 0.9rem;
+        }
+    }
+}
