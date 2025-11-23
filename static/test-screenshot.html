@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screenshot Test - SpaceSense Pro</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #1a1a2e;
+            color: #fff;
+        }
+        h1 { color: #00d4ff; }
+        .test-area {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border: 2px solid #00d4ff;
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 20px 0;
+        }
+        button {
+            background: #00d4ff;
+            color: #000;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin: 10px 5px;
+        }
+        button:hover { background: #00a8cc; }
+        #log {
+            background: #000;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            font-family: monospace;
+            font-size: 14px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .success { color: #4caf50; }
+        .error { color: #f44336; }
+        .info { color: #00d4ff; }
+        .stat-box {
+            display: inline-block;
+            background: rgba(0, 212, 255, 0.1);
+            border: 2px solid #00d4ff;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 10px;
+            min-width: 150px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #00d4ff;
+        }
+        .stat-label {
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Screenshot Functionality Test</h1>
+    <p>Test the screenshot capture feature</p>
+    
+    <div class="test-area" id="captureArea">
+        <h2>SpaceSense Pro Dashboard</h2>
+        <p>This is a test area that will be captured</p>
+        
+        <div class="stat-box">
+            <div class="stat-value">127</div>
+            <div class="stat-label">Total Objects</div>
+        </div>
+        
+        <div class="stat-box">
+            <div class="stat-value">23</div>
+            <div class="stat-label">High Risk</div>
+        </div>
+        
+        <div class="stat-box">
+            <div class="stat-value">2.3%</div>
+            <div class="stat-label">Collision Risk</div>
+        </div>
+    </div>
+    
+    <div>
+        <button onclick="test1()">Test 1: Check html2canvas</button>
+        <button onclick="test2()">Test 2: Capture Test Area</button>
+        <button onclick="test3()">Test 3: Capture Full Page</button>
+        <button onclick="clearLog()">Clear Log</button>
+    </div>
+    
+    <div id="log"></div>
+
+    <script>
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const line = document.createElement('div');
+            line.className = type;
+            line.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logDiv.appendChild(line);
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+
+        function clearLog() {
+            document.getElementById('log').innerHTML = '';
+        }
+
+        function test1() {
+            log('🧪 Test 1: Checking html2canvas availability...', 'info');
+            
+            if (window.html2canvas) {
+                log('✅ html2canvas is loaded', 'success');
+                log('✅ Version: ' + (html2canvas.version || 'unknown'), 'success');
+                log('✅ Test 1 PASSED', 'success');
+            } else {
+                log('❌ html2canvas NOT found', 'error');
+                log('❌ Test 1 FAILED', 'error');
+            }
+        }
+
+        async function test2() {
+            log('🧪 Test 2: Capturing test area...', 'info');
+            
+            try {
+                const element = document.getElementById('captureArea');
+                log('📷 Target element found', 'info');
+                
+                const canvas = await html2canvas(element, {
+                    backgroundColor: '#1a1a2e',
+                    scale: 2,
+                    logging: false
+                });
+                
+                log('✅ Canvas created: ' + canvas.width + 'x' + canvas.height, 'success');
+                
+                // Convert to blob and download
+                canvas.toBlob((blob) => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'test-area-screenshot.png';
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    
+                    log('✅ Screenshot downloaded: test-area-screenshot.png', 'success');
+                    log('✅ Test 2 PASSED', 'success');
+                }, 'image/png');
+                
+            } catch (error) {
+                log('❌ Error: ' + error.message, 'error');
+                log('❌ Test 2 FAILED', 'error');
+            }
+        }
+
+        async function test3() {
+            log('🧪 Test 3: Capturing full page...', 'info');
+            
+            try {
+                const canvas = await html2canvas(document.body, {
+                    backgroundColor: '#1a1a2e',
+                    scale: 2,
+                    logging: false,
+                    windowWidth: document.body.scrollWidth,
+                    windowHeight: document.body.scrollHeight
+                });
+                
+                log('✅ Canvas created: ' + canvas.width + 'x' + canvas.height, 'success');
+                
+                canvas.toBlob((blob) => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'full-page-screenshot.png';
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    
+                    log('✅ Screenshot downloaded: full-page-screenshot.png', 'success');
+                    log('✅ Test 3 PASSED', 'success');
+                }, 'image/png');
+                
+            } catch (error) {
+                log('❌ Error: ' + error.message, 'error');
+                log('❌ Test 3 FAILED', 'error');
+            }
+        }
+
+        // Auto-run test 1 on load
+        window.addEventListener('load', () => {
+            log('🚀 Page loaded', 'info');
+            setTimeout(() => test1(), 500);
+        });
+    </script>
+</body>
+</html>
