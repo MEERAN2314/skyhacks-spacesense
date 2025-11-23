@@ -22,7 +22,7 @@ class WebSocketClient {
                 this.isConnected = true;
                 this.reconnectAttempts = 0;
                 this.updateConnectionStatus(true);
-                this.showNotification('Connected to SpaceSense Lite', 'success');
+                this.showNotification('Connected to SpaceSense Pro', 'success');
             };
             
             this.ws.onmessage = (event) => {

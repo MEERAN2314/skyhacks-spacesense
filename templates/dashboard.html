@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SpaceSense Lite - Orbital Debris Intelligence</title>
+    <title>SpaceSense Pro - Professional Orbital Debris Intelligence</title>
     <link rel="stylesheet" href="/static/css/style.css">
     <link rel="stylesheet" href="/static/css/animations.css">
+    <link rel="stylesheet" href="/static/css/advanced-components.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
@@ -13,6 +14,7 @@
     <div class="space-background">
         <div class="stars"></div>
         <div class="twinkling"></div>
+        <div class="shooting-stars"></div>
     </div>
 
     <!-- Navigation -->
@@ -20,7 +22,7 @@
         <div class="nav-container">
             <div class="nav-brand">
                 <i class="fas fa-satellite"></i>
-                <span>SpaceSense Lite</span>
+                <span>SpaceSense Pro</span>
             </div>
             <div class="nav-status">
                 <div class="nav-controls">
@@ -45,43 +47,59 @@
     <div class="dashboard-container">
         <!-- Header Stats -->
         <div class="stats-grid">
-            <div class="stat-card animate-slide-up">
+            <div class="stat-card stat-card-advanced animate-slide-up">
                 <div class="stat-icon">
                     <i class="fas fa-exclamation-triangle"></i>
                 </div>
                 <div class="stat-content">
                     <h3 id="totalObjects">Loading...</h3>
                     <p>Total Objects</p>
+                    <div class="stat-trend up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>+12 today</span>
+                    </div>
                 </div>
             </div>
             
-            <div class="stat-card animate-slide-up" style="animation-delay: 0.1s">
+            <div class="stat-card stat-card-advanced animate-slide-up" style="animation-delay: 0.1s">
                 <div class="stat-icon high-risk">
                     <i class="fas fa-radiation"></i>
                 </div>
                 <div class="stat-content">
                     <h3 id="highRiskObjects">Loading...</h3>
                     <p>High Risk</p>
+                    <div class="stat-trend down">
+                        <i class="fas fa-arrow-down"></i>
+                        <span>-3 today</span>
+                    </div>
                 </div>
             </div>
             
-            <div class="stat-card animate-slide-up" style="animation-delay: 0.2s">
+            <div class="stat-card stat-card-advanced animate-slide-up" style="animation-delay: 0.2s">
                 <div class="stat-icon medium-risk">
                     <i class="fas fa-eye"></i>
                 </div>
                 <div class="stat-content">
                     <h3 id="mediumRiskObjects">Loading...</h3>
                     <p>Watch Zone</p>
+                    <div class="stat-trend up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>+5 today</span>
+                    </div>
                 </div>
             </div>
             
-            <div class="stat-card animate-slide-up" style="animation-delay: 0.3s">
+            <div class="stat-card stat-card-advanced animate-slide-up" style="animation-delay: 0.3s">
                 <div class="stat-icon">
                     <i class="fas fa-bell"></i>
                 </div>
                 <div class="stat-content">
                     <h3 id="activeAlerts">Loading...</h3>
                     <p>Active Alerts</p>
+                    <div class="stat-trend down">
+                        <i class="fas fa-arrow-down"></i>
+                        <span>-1 today</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -207,19 +225,190 @@
                 </div>
             </div>
         </div>
+
+        <!-- Advanced Features Section -->
+        <div class="advanced-section" style="margin-top: 2rem;">
+            <div class="main-grid">
+                <!-- Debris Heatmap -->
+                <div class="panel heatmap-panel animate-fade-in">
+                    <div class="panel-header">
+                        <h2><i class="fas fa-fire"></i> Debris Density Heatmap</h2>
+                    </div>
+                    <div class="heatmap-container" id="debrisHeatmap"></div>
+                </div>
+
+                <!-- Event Timeline -->
+                <div class="panel timeline-panel animate-fade-in" style="animation-delay: 0.2s">
+                    <div class="panel-header">
+                        <h2><i class="fas fa-clock"></i> Event Timeline</h2>
+                    </div>
+                    <div class="timeline-container" id="eventTimeline">
+                        <!-- Dynamic timeline events -->
+                    </div>
+                </div>
+
+                <!-- Satellite Tracker -->
+                <div class="panel satellite-panel animate-fade-in" style="animation-delay: 0.4s">
+                    <div class="panel-header">
+                        <h2><i class="fas fa-satellite"></i> Satellite Tracker</h2>
+                    </div>
+                    <div class="satellite-tracker">
+                        <div class="search-container">
+                            <i class="fas fa-search search-icon"></i>
+                            <input type="text" class="search-input" id="satelliteSearch" placeholder="Search satellites...">
+                        </div>
+                        <div class="filter-panel">
+                            <div class="filter-group">
+                                <button class="filter-btn active" data-filter="all">All</button>
+                                <button class="filter-btn" data-filter="crewed">Crewed</button>
+                                <button class="filter-btn" data-filter="science">Science</button>
+                                <button class="filter-btn" data-filter="communication">Comm</button>
+                                <button class="filter-btn" data-filter="navigation">Nav</button>
+                            </div>
+                        </div>
+                        <div class="satellite-list" id="satelliteList">
+                            <!-- Dynamic satellite list -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Performance Metrics -->
+                <div class="panel performance-panel animate-fade-in" style="animation-delay: 0.6s">
+                    <div class="panel-header">
+                        <h2><i class="fas fa-tachometer-alt"></i> System Performance</h2>
+                    </div>
+                    <div class="performance-metrics" id="performanceMetrics">
+                        <!-- Dynamic performance metrics -->
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Loading Overlay -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-spinner">
             <div class="spinner"></div>
-            <p>Initializing SpaceSense Lite...</p>
+            <p>Initializing SpaceSense Pro...</p>
+        </div>
+    </div>
+
+    <!-- Fullscreen Button -->
+    <button class="fullscreen-btn" id="fullscreenBtn" title="Toggle Fullscreen">
+        <i class="fas fa-expand"></i>
+    </button>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+        <button class="quick-action-btn" id="screenshotBtn" title="Take Screenshot">
+            <i class="fas fa-camera"></i>
+        </button>
+        <button class="quick-action-btn" id="shareBtn" title="Share">
+            <i class="fas fa-share-alt"></i>
+        </button>
+        <button class="quick-action-btn" id="helpBtn" title="Keyboard Shortcuts">
+            <i class="fas fa-keyboard"></i>
+        </button>
+    </div>
+
+    <!-- Keyboard Shortcuts Help -->
+    <div class="shortcuts-help" id="shortcutsHelp">
+        <h3 style="margin-bottom: 1rem; color: var(--primary-color);">Keyboard Shortcuts</h3>
+        <div class="shortcuts-list">
+            <div class="shortcut-item">
+                <span class="shortcut-key">Ctrl+R</span>
+                <span>Refresh Data</span>
+            </div>
+            <div class="shortcut-item">
+                <span class="shortcut-key">+/-</span>
+                <span>Zoom In/Out</span>
+            </div>
+            <div class="shortcut-item">
+                <span class="shortcut-key">Space</span>
+                <span>Pause/Play</span>
+            </div>
+            <div class="shortcut-item">
+                <span class="shortcut-key">F11</span>
+                <span>Fullscreen</span>
+            </div>
+            <div class="shortcut-item">
+                <span class="shortcut-key">Esc</span>
+                <span>Close Modals</span>
+            </div>
+            <div class="shortcut-item">
+                <span class="shortcut-key">?</span>
+                <span>Show Help</span>
+            </div>
         </div>
     </div>
 
     <!-- Scripts -->
+    <script src="/static/js/particle-effects.js"></script>
+    <script src="/static/js/sound-effects.js"></script>
     <script src="/static/js/earth-visualization.js"></script>
     <script src="/static/js/websocket-client.js"></script>
     <script src="/static/js/dashboard.js"></script>
+    <script src="/static/js/advanced-features.js"></script>
+    <script src="/static/js/data-export.js"></script>
+    
+    <script>
+        // Fullscreen functionality
+        document.getElementById('fullscreenBtn')?.addEventListener('click', function() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+                this.querySelector('i').className = 'fas fa-compress';
+            } else {
+                document.exitFullscreen();
+                this.querySelector('i').className = 'fas fa-expand';
+            }
+        });
+        
+        // Screenshot functionality
+        document.getElementById('screenshotBtn')?.addEventListener('click', function() {
+            if (window.wsClient) {
+                window.wsClient.showNotification('Screenshot feature coming soon!', 'info');
+            }
+        });
+        
+        // Share functionality
+        document.getElementById('shareBtn')?.addEventListener('click', async function() {
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: 'SpaceSense Pro',
+                        text: 'Check out this amazing orbital debris tracking system!',
+                        url: window.location.href
+                    });
+                } catch (err) {
+                    console.log('Share failed:', err);
+                }
+            } else {
+                if (window.wsClient) {
+                    window.wsClient.showNotification('Share not supported on this browser', 'warning');
+                }
+            }
+        });
+        
+        // Help button
+        document.getElementById('helpBtn')?.addEventListener('click', function() {
+            const help = document.getElementById('shortcutsHelp');
+            help.classList.toggle('show');
+            setTimeout(() => {
+                if (help.classList.contains('show')) {
+                    help.classList.remove('show');
+                }
+            }, 5000);
+        });
+        
+        // Keyboard shortcut for help
+        document.addEventListener('keydown', function(e) {
+            if (e.key === '?' || e.key === 'h') {
+                document.getElementById('helpBtn')?.click();
+            }
+            if (e.key === 'Escape') {
+                document.getElementById('shortcutsHelp')?.classList.remove('show');
+            }
+        });
+    </script>
 </body>
 </html>

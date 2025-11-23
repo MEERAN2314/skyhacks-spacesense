@@ -11,7 +11,7 @@ class DashboardManager {
     }
     
     async initialize() {
-        console.log('🚀 Initializing SpaceSense Lite Dashboard...');
+        console.log('🚀 Initializing SpaceSense Pro Dashboard...');
         
         try {
             // Show loading overlay
